@@ -21,3 +21,5 @@ Potential resources:
 * As both code size and speed are important, there must not be any dependencies of the genereated code or the library code.
 * Less is more, library design should be focused on the use cases (todo). This removes flexibility, but also improves ease-of-use as well as code size / performance.
 * Using a library (C++) for serialization requires the programmer to adjust his code, thus cluttering the code with "housekeeping" jobs. Using external code generation seperates these aspects, similar to aspect oriented programming.
+* Using the C++ class declaration somewhat limits both end points to that language. Using a "serialization language" makes it possible to specify data exchange independent of used language.
+* Possible future additions, RPC calls, for satelite networks
