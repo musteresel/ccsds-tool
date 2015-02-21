@@ -36,6 +36,10 @@ class Simple
 class Complex
 {
   ExtClass * pointer;
+  Complex(int a)
+  {
+  }
+  void stuff(Simple const &) const;
 };
 
 void dummy(void);

@@ -124,9 +124,66 @@ int main(int argc, char const ** argv)
     {
       std::cout << "    " << f << std::endl;
     }
+    std::cout << "    --" << std::endl;
+    for (auto m : decl.methods)
+    {
+      std::cout << "    " << m << std::endl;
+    }
     std::cout << "}" << std::endl;
   }
   clang_disposeTranslationUnit(translation);
   clang_disposeIndex(index);
   return 0;
 }
+/*
+   |-------------------------------------------------v
+ARGS --(parse libclang)--> setof Declarations ----> outfile
+
+declCursor -> Declaration
+fieldCursor -> field in Declaration
+methodCursor -> method in Declaration
+*/
+
+class Decl
+{
+  public:
+    virtual void addField(void) = 0;
+    virtual void addMethod(void) = 0;
+};
+
+/*
+ * Decl:
+ * NAME (+ namespace)
+ * TYPE (Union, Struct, class)
+ * BASECLASSES !!!
+ * TEMPLATES?!?
+ *
+ * Field:
+ * name
+ * TYPE (const, volatile?)
+ * static fields?
+ *
+ * Method:
+ * name
+ * signature (incl const volatile)
+ *
+ *
+ * Possible ways:
+ * 1. Make own interface (like above)
+ * 2. Provide access to underlying interface (libclang)
+ *
+ * 3. BOTH (own interface based on accessors provided by 2
+ *
+ * Important: 2 must try to be as general as possible, to be safe
+ * in case of api (libclang) changes.
+ * */
+
+
+/*
+ * libclang: dispose index only after everything has been done. Therefore,
+ * consider inversion of control.
+ * As an alternative, use reference counting and dispose only after
+ * everything has finished using it. Problem: Translation units need
+ * a wrapper then, too. So this might become rather complex ... and unneeded.
+ * */
+
