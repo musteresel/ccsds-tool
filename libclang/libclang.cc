@@ -99,6 +99,17 @@ CXChildVisitResult TranslationUnitVisitor(
   return CXChildVisit_Continue;
 }
 
+std::ostream & printType(std::ostream & os, CXCursor cursor)
+{
+  CXType type = clang_getCursorType(cursor);
+  CXType canonical = clang_getCanonicalType(type);
+  CXString spelling = clang_getTypeSpelling(type);
+  CXString canonical_spelling = clang_getTypeSpelling(canonical);
+  os << spelling << " - " << canonical_spelling;
+  clang_disposeString(spelling);
+  clang_disposeString(canonical_spelling);
+  return os;
+}
 
 
 int main(int argc, char const ** argv)
@@ -119,11 +130,12 @@ int main(int argc, char const ** argv)
   {
     std::cout << i.first;
     auto decl = i.second;
-    std::cout << " (" << decl.fields.size() << "|"
-      << decl.methods.size() << ") {" << std::endl;
+    std::cout << " :: ";
+    printType(std::cout, i.first) << std::endl;
     for (auto f : decl.fields)
     {
-      std::cout << "    " << f << std::endl;
+      std::cout << "    " << f << " :: ";
+      printType(std::cout, f) << std::endl;
     }
     std::cout << "    --" << std::endl;
     for (auto m : decl.methods)

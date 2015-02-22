@@ -53,5 +53,6 @@ template<>
 class Templated<Complex>
 {
   int well_kind_of_strange;
+  Templated<ExtClass const &> very_strange_indeed;
 };
 
