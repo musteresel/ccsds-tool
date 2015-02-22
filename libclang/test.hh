@@ -44,3 +44,14 @@ class Complex
 
 void dummy(void);
 
+template<typename X>
+class Templated
+{
+  X funny;
+};
+template<>
+class Templated<Complex>
+{
+  int well_kind_of_strange;
+};
+

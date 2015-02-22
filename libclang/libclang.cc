@@ -82,7 +82,8 @@ CXChildVisitResult TranslationUnitVisitor(
   std::cout << cursor << " (" << h(cursor) << ") "
     << parent << " (" << h(parent) << ")" << std::endl;
   if (kind == CXCursor_StructDecl || kind == CXCursor_UnionDecl
-      || kind == CXCursor_ClassDecl)
+      || kind == CXCursor_ClassDecl || kind == CXCursor_ClassTemplate
+      || kind == CXCursor_ClassTemplatePartialSpecialization)
   {
     return CXChildVisit_Recurse;
   }
