@@ -50,6 +50,9 @@ void Simple::doit(void) const
 void Hell::doit(void) const
 {
   std::cout << "Welcome to HELL" << std::endl;
+  // Select largest to serialize
+  // TODO will this always work?
+  ::doit(a);
 }
 
 int main(int argc, char ** argv)
