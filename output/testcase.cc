@@ -53,6 +53,11 @@ void Hell::doit(void) const
   // Select largest to serialize
   // TODO will this always work?
   ::doit(a);
+  // Don't:
+  // template<class A, class B> union Screwed { A a; B b; };
+  //
+  // Conversion to char[] won't help either, byte order might get screwed.
+  // Don't serialize unions for now.
 }
 
 int main(int argc, char ** argv)

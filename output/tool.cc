@@ -86,3 +86,45 @@ int main(int argc, char ** argv)
   return 0;
 }
 
+
+struct Structure
+{
+  using fields_type = std::forward_list<std::string>;
+  std::string name;
+  fields_type fields;
+  template<typename NM, typename FLDS> Structure(NM&& n, FLDS&& f)
+    : name(std::forward<NM>(n)), fields(std::forward<FLDS>(f))
+  {}
+  template<typename NM> Structure(NM && n)
+    : name(std::forward<NM>(n))
+  { /* default init fields */ }
+};
+
+void printSerializationMethod(std::ostream & o, Structure const & s)
+{
+  // Use \n instead of endl to prevent flushing
+  o << "void " << s.name << "::doit(void) const {\n";
+  for (auto field : s.fields)
+  {
+    o << "::doit(" << field << ");\n";
+  }
+  o << "}\n";
+}
+
+/*
+ * TYPE: name, size, align
+ * COMPLEX: fields, kind (product | sum)
+ * FIELD: name + TYPE + offset
+ *
+ *
+ * COMPOUND: has Type, fields, kind
+ * PRIMITIVE: has Type
+ *
+ *
+ * optionalTemplate
+ *
+ * printSignature (catches template stuff)
+ *
+ * field: name to call function on it.
+ * */
+
