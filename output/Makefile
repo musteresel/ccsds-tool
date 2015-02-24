@@ -1,4 +1,4 @@
-SOURCES := tool.cc
+SOURCES := tool.cc data.hh serialization.hh serialization.cc
 TARGET := ccsds-tool
 CXX ?= g++
 
