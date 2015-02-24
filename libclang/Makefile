@@ -10,10 +10,10 @@ all: $(TARGET) test
 $(TARGET): $(SOURCES)
 	$(CC) --std=c++11 -o $(@) $(filter %.cc, $(^)) -lclang
 
-.PHONY: clean
+.PHONY: clean test
 
 clean:
 	rm $(TARGET)
 
-test:
+test: $(TARGET)
 	./$(TARGET) $(TESTFILE)

@@ -27,7 +27,7 @@ std::ostream & operator<<(std::ostream & os, CXString str)
 }
 std::ostream & operator<<(std::ostream & os, CXCursor cursor)
 {
-  CXString spelling = clang_getCursorSpelling(cursor);
+  CXString spelling = clang_getCursorDisplayName(cursor);
   CXLanguageKind language = clang_getCursorLanguage(cursor);
   CXCursorKind kind = clang_getCursorKind(cursor);
   os << spelling << " (" << language << ")"
@@ -126,6 +126,9 @@ int main(int argc, char const ** argv)
   CXCursor cursor = clang_getTranslationUnitCursor(translation);
   auto declarations = declarations_map_type();
   clang_visitChildren(cursor, TranslationUnitVisitor, &declarations);
+  clang_disposeTranslationUnit(translation);
+  clang_disposeIndex(index);
+  std::cout << "YEAH" << std::endl;
   for(auto i : declarations)
   {
     std::cout << i.first;
@@ -141,11 +144,10 @@ int main(int argc, char const ** argv)
     for (auto m : decl.methods)
     {
       std::cout << "    " << m << std::endl;
+      printType(std::cout, m) << std::endl;
     }
     std::cout << "}" << std::endl;
   }
-  clang_disposeTranslationUnit(translation);
-  clang_disposeIndex(index);
   return 0;
 }
 /*

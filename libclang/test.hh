@@ -40,6 +40,8 @@ class Complex
   {
   }
   void stuff(Simple const &) const;
+  int returningInt(void) const;
+  char whatABoat(char const * const, Simple &);
 };
 
 void dummy(void);
