@@ -30,12 +30,14 @@ CXChildVisitResult translationUnitVisitor(
   {
     return CXChildVisit_Continue;
   }
-  CXCursorKind kind = clang_getCursorKind(kind);
+  CXCursorKind kind = clang_getCursorKind(cursor);
   if (! clang_isDeclaration(kind))
   {
     return CXChildVisit_Continue;
   }
-  auto declarations = *((declarations_map_type *) client_data);
+  // IMPORTANT: Use reference, otherwise a local copy is made and no
+  // declarations are inserted into the provided map.
+  auto & declarations = *((declarations_map_type *) client_data);
   if (kind == CXCursor_StructDecl
       || kind == CXCursor_ClassDecl)
   {
@@ -80,6 +82,7 @@ declarations_map_type runClangVisitor(int argc, char ** argv)
   auto declarations = declarations_map_type();
   if (translation)
   {
+    CXCursor cursor = clang_getTranslationUnitCursor(translation);
     clang_visitChildren(cursor, translationUnitVisitor, &declarations);
     clang_disposeTranslationUnit(translation);
   }

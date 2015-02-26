@@ -1,4 +1,5 @@
-SOURCES := libclang.cc
+SOURCES := extract.cc visit.cc visit.hh data.hh filter.hh filter.cc \
+  stdsupport.hh
 TARGET := ccsds-tool-libclang
 TESTFILE := test.hh
 CC ?= g++

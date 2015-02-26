@@ -44,6 +44,15 @@ class Complex
   char whatABoat(char const * const, Simple &);
 };
 
+
+struct SerializeMe
+{
+  int a;
+  int b;
+  int c;
+  void doit() const;
+};
+
 void dummy(void);
 
 template<typename X>

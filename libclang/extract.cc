@@ -1,114 +1,38 @@
+#include "visit.hh"
+#include "filter.hh"
+#include <iostream>
+#include <algorithm>
 
-#include "stdsupport.hh"
-#include "clang-c/Index.h"
-
-#include <set>
-#include <map>
-
-struct DeclarationContent
+std::ostream & operator<<(std::ostream & os, CXString str)
 {
-  using container_type = std::set<CXCursor>;
-  container_type fields;
-  container_type methods;
-};
-
-using declarations_map_type = std::map<CXCursor, DeclarationContent>;
-
-
-
-CXChildVisitResult translationUnitVisitor(
-    CXCursor cursor, CXCursor parent, CXClientData client_data)
+  os << clang_getCString(str);
+  return os;
+}
+std::ostream & operator<<(std::ostream & os, CXCursor cursor)
 {
-  if (! clang_Location_isFromMainFile(clang_getCursorLocation(cursor)))
-  {
-    return CXChildVisit_Continue;
-  }
-  CXCursorKind kind = clang_getCursorKind(kind);
-  if (! clang_isDeclaration(kind))
-  {
-    return CXChildVisit_Continue;
-  }
-  auto declarations = *((declarations_map_type *) client_data);
-  if (kind == CXCursor_StructDecl
-      || kind == CXCursor_ClassDecl)
-  {
-    return CXChildVisit_Recurse;
-  }
-  if (kind == CXCursor_FieldDecl)
-  {
-    // TODO assert parent == semantic parent
-    declarations[parent].fields.insert(cursor);
-  }
-  else if (kind == CXCursor_CXXMethod)
-  {
-    declarations[parent].methods.insert(cursor);
-  }
-  return CXChildVisit_Continue;
+  CXString spelling = clang_getCursorDisplayName(cursor);
+  os << spelling;
+  clang_disposeString(spelling);
+  return os;
 }
 
-
-
-declarations_map_type runClangVisitor(int argc, char ** argv)
+  using std::cout;
+  using std::endl;
+void debugDecls(declarations_map_type const & decls)
 {
-  CXIndex index = clang_createIndex(0, 1);
-  CXTranslationUnit translation = clang_parseTranslationUnit(
-      index,
-      0,
-      argv,
-      argc,
-      0, 0,
-      0);
-  auto declarations = declarations_map_type();
-  if (translation)
+  for (auto decl : decls)
   {
-    clang_visitChildren(cursor, translationUnitVisitor, &declarations);
-    clang_disposeTranslationUnit(translation);
-  }
-  clang_disposeIndex(index);
-  return declarations;
-}
-
-
-auto const wrongName = [](std::string name)
-{
-  return [=name](CXCursor cursor)
-  {
-    CXString spelling = clang_getCursorSpelling(cursor);
-    bool result = (name != clang_getCString(spelling));
-    clang_disposeString(spelling);
-    return result;
-  }
-};
-auto const wrongSignature = [](std::string signature)
-{
-  return [=signature](CXCursor cursor)
-  {
-    CXType type = clang_getCursorType(cursor);
-    CXString spelling = clang_getTypeSpelling(type);
-    bool result = (signature != clang_getCString(spelling));
-    clang_disposeString(spelling);
-    return result;
+    cout << decl.first << endl;
   }
 };
 
-template<typename OP, typename CONT, typename PRED>
-void on_container(CONT & c, Pred & p)
+
+int main(int argc, char ** argv)
 {
-  OP(c.begin(),c.end(),p);
+  auto decls = runClangVisitor(argc - 1, argv + 1);
+  debugDecls(decls);
+  stdSupport::erase_if(decls, noCodeGenerationRequested);
+  cout << "--" << endl;
+  debugDecls(decls);
+  return 0;
 }
-
-
-bool noCodeGenerationRequested(declarations_map_type::value_type const & v)
-{
-  auto & methods = v.second.methods;
-  on_container<std::remove_if>(methods, wrongName("doit"));
-  on_container<std::remove_if>(methods, wrongSignature("void () const"));
-  return (methods.size() == 1);
-}
-
-
-void hm()
-{
-  on_container<std::remove_if>(decls, noCodeGenerationRequested);
-}
-

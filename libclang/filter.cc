@@ -9,13 +9,13 @@
  * */
 auto const wrongName = [](std::string name)
 {
-  return [=name](CXCursor cursor)
+  return [name](CXCursor const & cursor)
   {
     CXString spelling = clang_getCursorSpelling(cursor);
     bool result = (name != clang_getCString(spelling));
     clang_disposeString(spelling);
     return result;
-  }
+  };
 };
 
 /** Creates a predicate function that returns true for every cursor
@@ -23,18 +23,21 @@ auto const wrongName = [](std::string name)
  *
  * The signature must match exactly, that is including whitespace.
  *
+ * @warning Both const and volatile are recognized by this check.
  * @todo Improve whitespace handling in signature string.
+ * @todo volatile is part of the signature. This may lead to unintended
+ * missmatches.
  * */
 auto const wrongSignature = [](std::string signature)
 {
-  return [=signature](CXCursor cursor)
+  return [signature](CXCursor const & cursor)
   {
     CXType type = clang_getCursorType(cursor);
     CXString spelling = clang_getTypeSpelling(type);
     bool result = (signature != clang_getCString(spelling));
     clang_disposeString(spelling);
     return result;
-  }
+  };
 };
 
 /** Predicate function to filter out map pairs which don't match the
@@ -55,9 +58,8 @@ auto const wrongSignature = [](std::string signature)
 bool noCodeGenerationRequested(declarations_map_type::value_type & v)
 {
   auto & methods = v.second.methods;
-  std::remove_if(methods.begin(), methods.end(), wrongName("doit"));
-  std::remove_if(methods.begin(), methods.end(),
-      wrongSignature("void () const"));
+  stdSupport::erase_if(methods, wrongName("doit"));
+  stdSupport::erase_if(methods, wrongSignature("void () const"));
   return (methods.size() != 1);
 }
 
