@@ -49,14 +49,57 @@ auto const declarationToStructure = [](
 };
 
 
+struct Arguments
+{
+  struct
+  {
+    std::size_t count;
+    char const * first;
+    char const * input;
+  } clang;
+  char const * output;
+};
+
+  template<typename Container, typename Fn>
+void processCmdOption(Container & container, std::string cmd, Fn const & f)
+{
+  for (auto iterator = std::begin(container), option = iterator++;
+      option != std::end(container);)
+  {
+    if (cmd == *iterator)
+    {
+      f(*option);
+      iterator = container.erase(iterator, option++);
+      option = iterator++;
+    }
+  }
+}
+
+
+Arguments parseArguments(int argc, char const * const * argv)
+{
+  auto endOfArguments = argv + argc;
+  auto separator = std::find(argv, endOfArguments, std::string("--"));
+  auto arguments = Arguments();
+  arguments.clang.first = (separator == endOfArguments) ?
+    separator : (separator + 1);
+  arguments.clang.count = endOfArguments - arguments.clang.first;
+  auto toolArgs = std::list<char const *>(argv, separator);
+  processCmdOption(toolArgs, "-o", [&arguments](char const * file) {
+      arguments.output = file;
+      });
+  // TODO error reporting, not ignoring
+  arguments.clang.input = *std::begin(toolArgs);
+  return arguments;
+}
+
 
 
 int main(int argc, char ** argv)
 {
-  // TODO get input file out of arguments
-  // proposal:
-  // ccsds-tool OUT IN <optional-clang-args>
-  auto declarations = runClangVisitor(argc - 1, argv + 1);
+  auto arguments = parseArguments(argc - 1, argv + 1);
+  auto declarations = runClangVisitor(arguments.clang.input,
+      arguments.clang.count, arguments.clang.first);
   stdSupport::erase_if(declarations, noCodeGenerationRequested);
   std::list<Structure> structures;
   for (auto const & declaration : declarations)
