@@ -64,6 +64,11 @@ int main(int argc, char ** argv)
    * Seems to be related to the move constructor of the empty forward_list
    * std::transform(decls.begin(), decls.end(), structures.begin(),
       declarationToStructure);*/
+  auto outfileArg = std::find(argv + 1, argv + argc,std::string("-o")) + 1;
+  if (outfileArg < argv + argc)
+  {
+    std::cout << "Output to: " << *outfileArg << std::endl;
+  }
   for (auto const & structure : structures)
   {
     printSerializationMethod(std::cout, structure);
