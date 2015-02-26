@@ -40,6 +40,17 @@ class Complex
   {
   }
   void stuff(Simple const &) const;
+  int returningInt(void) const;
+  char whatABoat(char const * const, Simple &);
+};
+
+
+struct SerializeMe
+{
+  int a;
+  int b;
+  int c;
+  void doit() const;
 };
 
 void dummy(void);
