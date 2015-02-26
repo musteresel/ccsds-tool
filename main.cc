@@ -3,6 +3,7 @@
 #include "output/data.hh"
 #include "output/serialization.hh"
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <list>
 
@@ -48,30 +49,39 @@ auto const declarationToStructure = [](
 };
 
 
+
+
 int main(int argc, char ** argv)
 {
-  auto decls = runClangVisitor(argc - 1, argv + 1);
-  stdSupport::erase_if(decls, noCodeGenerationRequested);
-  debugDecls(decls);
-  std::cout << "---" << std::endl;
-  // TODO convert one representation to the other
+  // TODO get input file out of arguments
+  // proposal:
+  // ccsds-tool OUT IN <optional-clang-args>
+  auto declarations = runClangVisitor(argc - 1, argv + 1);
+  stdSupport::erase_if(declarations, noCodeGenerationRequested);
   std::list<Structure> structures;
-  for (auto const & decl : decls)
+  for (auto const & declaration : declarations)
   {
-    structures.push_back(declarationToStructure(decl));
+    structures.push_back(declarationToStructure(declaration));
   }
-  /* TODO for some reason this fails. Investigate why!
-   * Seems to be related to the move constructor of the empty forward_list
-   * std::transform(decls.begin(), decls.end(), structures.begin(),
-      declarationToStructure);*/
   auto outfileArg = std::find(argv + 1, argv + argc,std::string("-o")) + 1;
+  std::ofstream outfile;
+  std::streambuf *backup;
   if (outfileArg < argv + argc)
   {
-    std::cout << "Output to: " << *outfileArg << std::endl;
+    std::cerr << "Output to: " << *outfileArg << std::endl;
+    outfile.open(*outfileArg);
+    backup = std::cout.rdbuf();
+    std::cout.rdbuf(outfile.rdbuf());
   }
+  std::cout << "#include <ccsds-tool/serialize.hh>\n"
+    << "#include \"--mainfile--\"\n";
   for (auto const & structure : structures)
   {
     printSerializationMethod(std::cout, structure);
+  }
+  if (outfileArg < argv + argc)
+  {
+    std::cout.rdbuf(backup);
   }
   return 0;
 }
