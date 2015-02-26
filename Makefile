@@ -10,7 +10,7 @@ default: $(TARGET)
 all: $(TARGET) test
 
 $(TARGET): $(SOURCES)
-	$(CC) --std=c++11 -o $(@) $(filter %.cc, $(^)) -lclang
+	$(CC) --std=c++11 -I./ -o $(@) $(filter %.cc, $(^)) -lclang
 
 .PHONY: clean test
 
