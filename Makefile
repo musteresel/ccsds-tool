@@ -4,14 +4,14 @@ SOURCES := main.cc \
   output/serialization.hh output/serialization.cc output/data.hh
 TARGET := ccsds-tool
 TESTFILE := libclang/test.hh
-CC ?= g++
+CXX ?= g++
 
 
 default: $(TARGET)
 all: $(TARGET) test
 
 $(TARGET): $(SOURCES)
-	$(CC) --std=c++11 -I./ -o $(@) $(filter %.cc, $(^)) -lclang
+	$(CXX) -g --std=c++11 -I./ -o $(@) $(filter %.cc, $(^)) -lclang
 
 .PHONY: clean test
 

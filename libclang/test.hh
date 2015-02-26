@@ -53,6 +53,15 @@ struct SerializeMe
   void doit() const;
 };
 
+class Me2
+{
+  private:
+    int const WOAH;
+  public:
+    SerializeMe & thatGuy;
+    void doit() const;
+};
+
 void dummy(void);
 
 template<typename X>

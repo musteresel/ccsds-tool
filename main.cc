@@ -4,6 +4,7 @@
 #include "output/serialization.hh"
 #include <iostream>
 #include <algorithm>
+#include <list>
 
 using std::cout;
 using std::endl;
@@ -31,20 +32,42 @@ void debugDecls(declarations_map_type const & decls)
 };
 
 
+auto const declarationToStructure = [](
+    declarations_map_type::value_type const & decl)
+{
+  CXString spelling = clang_getCursorSpelling(decl.first);
+  auto result = Structure(clang_getCString(spelling));
+  for (auto const & field : decl.second.fields)
+  {
+    CXString name = clang_getCursorSpelling(field);
+    result.fields.push_front(clang_getCString(name));
+    clang_disposeString(name);
+  }
+  clang_disposeString(spelling);
+  return result;
+};
+
+
 int main(int argc, char ** argv)
 {
   auto decls = runClangVisitor(argc - 1, argv + 1);
-  debugDecls(decls);
   stdSupport::erase_if(decls, noCodeGenerationRequested);
-  cout << "--" << endl;
   debugDecls(decls);
+  std::cout << "---" << std::endl;
   // TODO convert one representation to the other
-  auto structures = {
-    Structure("One", Structure::fields_type{"field"}),
-    Structure("Two", Structure::fields_type{"feld", "undNochEines"})};
-  std::for_each(std::begin(structures), std::end(structures),
-      [] (Structure const & s) {
-      printSerializationMethod(std::cout, s);});
+  std::list<Structure> structures;
+  for (auto const & decl : decls)
+  {
+    structures.push_back(declarationToStructure(decl));
+  }
+  /* TODO for some reason this fails. Investigate why!
+   * Seems to be related to the move constructor of the empty forward_list
+   * std::transform(decls.begin(), decls.end(), structures.begin(),
+      declarationToStructure);*/
+  for (auto const & structure : structures)
+  {
+    printSerializationMethod(std::cout, structure);
+  }
   return 0;
 }
 
