@@ -3,11 +3,11 @@
 , llvmPackages ? (import <nixpkgs> {}).llvmPackages}:
 
 stdenv.mkDerivation {
-  name = "ccsds-tool-libclang";
+  name = "ccsds-tool";
   src = ./.;
   buildInputs = [ clang llvmPackages.clang ];
   installPhase = ''
     mkdir -p $out/bin
-    cp ccsds-tool-libclang $out/bin
+    cp ccsds-tool $out/bin
   '';
 }
