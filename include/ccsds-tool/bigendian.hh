@@ -5,6 +5,7 @@
  * */
 #ifndef _CCSDS_TOOL_BIGENDIAN_HH_
 #define _CCSDS_TOOL_BIGENDIAN_HH_ 1
+#include "ccsds-tool/serialize.hh"
 
 namespace ccsds_tool
 {
