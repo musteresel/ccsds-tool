@@ -23,3 +23,7 @@ Potential resources:
 * Using a library (C++) for serialization requires the programmer to adjust his code, thus cluttering the code with "housekeeping" jobs. Using external code generation seperates these aspects, similar to aspect oriented programming.
 * Using the C++ class declaration somewhat limits both end points to that language. Using a "serialization language" makes it possible to specify data exchange independent of used language.
 * Possible future additions, RPC calls, for satelite networks
+
+## Open implementation details, issues to tackle
+* Check how namespaces are handled
+* Consider implementation to handle template classes / structs.

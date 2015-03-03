@@ -1,10 +1,10 @@
 /** Abstraction of the extracted structure / class information.
  *
  * */
-#ifndef _CCSDS_TOOL_DATA_HH_
-#define _CCSDS_TOOL_DATA_HH_ 1
+#ifndef _CCSDS_TOOL_OUTPUT_DATA_HH_
+#define _CCSDS_TOOL_OUTPUT_DATA_HH_ 1
 #include <string>
-#include <forward_list>
+#include <list>
 #include <utility>
 
 /** Contains information extracted from C++ struct and class definitions.
@@ -17,7 +17,7 @@ struct Structure
    * Providing the type as part of the API frees the user from changing
    * code in case this type gets changed.
    * */
-  using fields_type = std::forward_list<std::string>;
+  using fields_type = std::list<std::string>;
 
   /** Name of the structure.
    *

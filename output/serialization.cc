@@ -1,6 +1,6 @@
 /** Implementation of the actual generation of serialization code.
  * */
-#include "serialization.hh"
+#include "output/serialization.hh"
 
 /** Prints a serialization method for a given structure.
  *
@@ -13,11 +13,20 @@
 void printSerializationMethod(std::ostream & o, Structure const & s)
 {
   // Use \n instead of std::endl to prevent flushing of the buffer.
-  o << "void " << s.name << "::doit(void) const {\n";
+  o << "void " << s.name << "::serialize(char *& buffer) const {\n";
   for (auto field : s.fields)
   {
-    o << "  ::doit(" << field << ");\n";
+    o << "  ccsds_tool::serialize(buffer, " << field << ");\n";
   }
   o << "}\n";
 }
 
+void printDeserializationMethod(std::ostream & o, Structure const & s)
+{
+  o << "void " << s.name << "::deserialize(char *& buffer) {\n";
+  for (auto field : s.fields)
+  {
+    o << "  ccsds_tool::deserialize(buffer, " << field << ");\n";
+  }
+  o << "}\n";
+}
