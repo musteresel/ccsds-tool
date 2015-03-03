@@ -4,42 +4,18 @@
 #include <string>
 #include <algorithm>
 
-/** Creates a predicate function that returns true for every cursor
- * with a non-matching spelling.
- * */
-auto const wrongName = [](std::string name)
-{
-  return [name](CXCursor const & cursor)
-  {
-    CXString spelling = clang_getCursorSpelling(cursor);
-    bool result = (name != clang_getCString(spelling));
-    clang_disposeString(spelling);
-    return result;
-  };
-};
-
-/** Creates a predicate function that returns true for every cursor
- * that has a different type spelling (signature).
+/** Creates a predicate function to match a method with given name
+ * and signature.
  *
- * The signature must match exactly, that is including whitespace.
+ * The returned function checks a CXCursor whether its spelling and
+ * its type's spelling match the given name and signature. The
+ * signature must match exactly, that is including whitespace.
  *
  * @warning Both const and volatile are recognized by this check.
  * @todo Improve whitespace handling in signature string.
  * @todo volatile is part of the signature. This may lead to unintended
  * missmatches.
  * */
-auto const wrongSignature = [](std::string signature)
-{
-  return [signature](CXCursor const & cursor)
-  {
-    CXType type = clang_getCursorType(cursor);
-    CXString spelling = clang_getTypeSpelling(type);
-    bool result = (signature != clang_getCString(spelling));
-    clang_disposeString(spelling);
-    return result;
-  };
-};
-
 auto const isMethod = [](std::string name, std::string signature)
 {
   return [name, signature](CXCursor const & cursor)
@@ -69,7 +45,7 @@ auto const isMethod = [](std::string name, std::string signature)
  * */
 bool noCodeGenerationRequested(declarations_map_type::value_type & v)
 {
-  auto & methods = v.second.methods;
+  auto const & methods = v.second.methods;
   using std::find_if;
   using std::begin;
   using std::end;
