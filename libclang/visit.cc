@@ -39,7 +39,7 @@ CXChildVisitResult translationUnitVisitor(
   // declarations are inserted into the provided map.
   auto & declarations = *((declarations_map_type *) client_data);
   if (kind == CXCursor_StructDecl
-      || kind == CXCursor_ClassDecl)
+      || kind == CXCursor_ClassDecl || kind == CXCursor_Namespace)
   {
     return CXChildVisit_Recurse;
   }
