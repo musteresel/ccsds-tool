@@ -6,5 +6,6 @@
 #include <ostream>
 
 void printSerializationMethod(std::ostream &, Structure const &);
+void printDeserializationMethod(std::ostream &, Structure const &);
 
 #endif

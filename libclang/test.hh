@@ -59,7 +59,8 @@ class Me2
     int const WOAH;
   public:
     SerializeMe & thatGuy;
-    void doit() const;
+    void serialize(char*&) const;
+    void deserialize(char*&);
 };
 
 void dummy(void);

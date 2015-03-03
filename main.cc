@@ -53,35 +53,32 @@ auto const declarationToStructure = [](
 
 int main(int argc, char ** argv)
 {
-  // TODO get input file out of arguments
-  // proposal:
-  // ccsds-tool OUT IN <optional-clang-args>
-  auto declarations = runClangVisitor(argc - 1, argv + 1);
+  if (argc < 2)
+  {
+    // TODO usage
+    return 1;
+  }
+  auto inFile = argv[1];
+  char ** firstClang = nullptr;
+  auto numClang = 0;
+  if (argc > 2)
+  {
+    firstClang = argv + 2;
+    numClang = argc - 2;
+  }
+  auto declarations = runClangVisitor(inFile, numClang, firstClang);
   stdSupport::erase_if(declarations, noCodeGenerationRequested);
   std::list<Structure> structures;
   for (auto const & declaration : declarations)
   {
     structures.push_back(declarationToStructure(declaration));
   }
-  auto outfileArg = std::find(argv + 1, argv + argc,std::string("-o")) + 1;
-  std::ofstream outfile;
-  std::streambuf *backup;
-  if (outfileArg < argv + argc)
-  {
-    std::cerr << "Output to: " << *outfileArg << std::endl;
-    outfile.open(*outfileArg);
-    backup = std::cout.rdbuf();
-    std::cout.rdbuf(outfile.rdbuf());
-  }
   std::cout << "#include <ccsds-tool/serialize.hh>\n"
-    << "#include \"--mainfile--\"\n";
+    << "#include \"" << inFile << "\"\n";
   for (auto const & structure : structures)
   {
     printSerializationMethod(std::cout, structure);
-  }
-  if (outfileArg < argv + argc)
-  {
-    std::cout.rdbuf(backup);
+    printDeserializationMethod(std::cout, structure);
   }
   return 0;
 }

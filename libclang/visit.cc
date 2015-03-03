@@ -69,12 +69,13 @@ CXChildVisitResult translationUnitVisitor(
  *
  * @todo Implement error handling / logging.
  * */
-declarations_map_type runClangVisitor(int argc, char ** argv)
+declarations_map_type runClangVisitor(char const * file,
+    int argc, char ** argv)
 {
   CXIndex index = clang_createIndex(0, 1);
   CXTranslationUnit translation = clang_parseTranslationUnit(
       index,
-      0,
+      file,
       argv,
       argc,
       0, 0,
