@@ -1,10 +1,11 @@
-#include "ccsds-tool/debug-comma.hh"
+#include "debug-comma.hh"
 #include "serialize.hh"
 
 int main(int argc, char ** argv)
 {
+  using namespace ccsds_tool;
   auto buffer = new char[500];
-  auto writePtr = readPtr = buffer;
+  auto writePtr = buffer, readPtr = buffer;
   MyThing thing, copy;
   serialize(writePtr, thing);
   deserialize(readPtr, copy);

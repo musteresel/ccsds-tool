@@ -5,7 +5,7 @@ SOURCES := main.cc \
 TARGET := ccsds-tool
 TESTFILE := libclang/test.hh
 CXX ?= g++
-
+INSTALL_PATH ?= /usr/
 
 default: $(TARGET)
 all: $(TARGET) test
@@ -20,3 +20,10 @@ clean:
 
 test: $(TARGET)
 	./$(TARGET) $(TESTFILE)
+
+install: $(TARGET)
+	mkdir -p $(INSTALL_PATH)/bin
+	cp $(TARGET) $(INSTALL_PATH)/bin
+	mkdir -p $(INSTALL_PATH)/include/ccsds-tool
+	cp library/serialize.hh $(INSTALL_PATH)/include/ccsds-tool/
+

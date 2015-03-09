@@ -1,11 +1,19 @@
+SOURCES := serialize.cc serialize.hh debug-comma.hh debug-comma.cc
 CXX ?= g++
 
-serialize: serialize.cc serialize.hh serialize-gen.cc
-	$(CXX) -o $@ $(filter .cc, $^) -I./
+serialize: $(SOURCES) serialize-gen.cc
+	$(CXX) -std=c++11  -o $@ $(filter %.cc, $^) -I./
 
 serialize-gen.cc: serialize.hh
-	ccsds-tool $? > $@
+	ccsds-tool $? $${NIX_CFLAGS_COMPILE} > $@
 
-test:
+test: serialize
 	./serialize
+
+clean:
+	rm serialize serialize-gen.cc
+
+.PHONY: clean test
+
+all: test
 

@@ -1,6 +1,7 @@
 #ifndef _TEST_SERIALIZE_H_
 #define _TEST_SERIALIZE_H_ 1
 
+#include "debug-comma.hh"
 
 struct SubThing
 {

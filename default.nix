@@ -6,8 +6,8 @@ stdenv.mkDerivation {
   name = "ccsds-tool";
   src = ./.;
   buildInputs = [ clang llvmPackages.clang ];
-  installPhase = ''
-    mkdir -p $out/bin
-    cp ccsds-tool $out/bin
-  '';
+  installPhase = ''make install INSTALL_PATH=$out'';
+#    mkdir -p $out/bin
+#    cp ccsds-tool $out/bin
+#  '';
 }

@@ -1,5 +1,5 @@
 { stdenv ? (import <nixpkgs> {}).stdenv
-, ccsds-tool ? (import ../)
+, ccsds-tool ? (import ../default.nix {})
 }:
 stdenv.mkDerivation {
   name = "serialize-test";
