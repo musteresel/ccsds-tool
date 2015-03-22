@@ -19,6 +19,15 @@ struct Structure
    * */
   using fields_type = std::list<std::string>;
 
+  /** Type of the containier holding the namespace path.
+   *
+   * Providing the type as part of the API frees the user from changing
+   * code in case this type gets changed.
+   * Correct order is important, as the correct nesting of namespaces
+   * is critical.
+   * */
+  using namespaces_type = std::list<std::string>;
+
   /** Name of the structure.
    *
    * @todo Implement namespace handling.
@@ -38,19 +47,18 @@ struct Structure
    * */
   fields_type fields;
 
-  /** Perfect forwarding constructor, setting name and fields.
+  /** Namespaces the structure is contained in.
    *
-   * @param n Initialization for the name.
-   * @param f Initialization for the fields container.
-   */
-  template<typename NM, typename FLDS> Structure(NM&& n, FLDS&& f)
-    : name(std::forward<NM>(n)), fields(std::forward<FLDS>(f))
-  {}
+   * Contains the name of every namespace this structure is contained in,
+   * in the correct order (from outer to inner).
+   * */
+  namespaces_type namespaces;
 
   /** Perfect forwarding constructor, setting name only.
    *
    * The name (@see name) is initialized depending on the argument.
-   * The fields container (@see fields) is default initialized.
+   * The fields container (@see fields) and the namespaces container
+   * (@see namespaces) are default initialized.
    *
    * This constructor is explicit to prevent overload issues with copy
    * and move constructors.
@@ -59,7 +67,7 @@ struct Structure
    * */
   template<typename NM> explicit Structure(NM && n)
     : name(std::forward<NM>(n))
-  { /* default init fields */ }
+  { /* default init fields, namespaces */ }
 
   /** Default move constructor */
   Structure(Structure&&) = default;

@@ -38,18 +38,47 @@ auto const declarationToStructure = [](
 {
   CXString spelling = clang_getCursorSpelling(decl.first);
   auto result = Structure(clang_getCString(spelling));
+  clang_disposeString(spelling);
   for (auto const & field : decl.second.fields)
   {
     CXString name = clang_getCursorSpelling(field);
     result.fields.push_front(clang_getCString(name));
     clang_disposeString(name);
   }
-  clang_disposeString(spelling);
+  auto parent = clang_getCursorSemanticParent(decl.first);
+  while (! clang_isTranslationUnit(clang_getCursorKind(parent)))
+  {
+    if (clang_getCursorKind(parent) == CXCursor_Namespace)
+    {
+      CXString name = clang_getCursorSpelling(parent);
+      result.namespaces.push_front(clang_getCString(name));
+      clang_disposeString(name);
+    }
+    if (clang_getCursorKind(parent) == CXCursor_StructDecl)
+    {
+      std::cout << "GOT YA" << std::endl;
+    }
+    parent = clang_getCursorSemanticParent(parent);
+  }
   return result;
 };
 
 
-
+void printNamespace(std::ostream & o, Structure const & s)
+{
+  for (auto namesp : s.namespaces)
+  {
+    o << "namespace " << namesp << " {\n";
+  }
+}
+void closeNamespace(std::ostream & o, Structure const & s)
+{
+  for (auto namesp : s.namespaces)
+  {
+    o << "} ";
+  }
+  o << "\n";
+}
 
 int main(int argc, char ** argv)
 {
@@ -77,8 +106,10 @@ int main(int argc, char ** argv)
     << "#include \"" << inFile << "\"\n";
   for (auto const & structure : structures)
   {
+    printNamespace(std::cout, structure);
     printSerializationMethod(std::cout, structure);
     printDeserializationMethod(std::cout, structure);
+    closeNamespace(std::cout, structure);
   }
   return 0;
 }

@@ -16,6 +16,19 @@ namespace NAMESPACE
     void serialize(char*&) const;
     void deserialize(char*&);
   };
+
+  namespace INNER { namespace INNEST {
+    struct JustSomeStruct
+    {
+      int blah;
+      struct HereItGoes
+      {
+        int x;
+        void serialize(char*&) const;
+        void deserialize(char*&);
+      };
+    };
+  }}
 }
 
 class Me2
